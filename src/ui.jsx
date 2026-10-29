@@ -84,19 +84,15 @@ export function DataBox({ label, data }) {
 /** Botones de opción (una sola elección). options: [[valor, etiqueta], ...] */
 export function Choices({ value, onChange, options, state, correct }) {
   return (
-    <span className="seg" style={{ display: "inline-flex", flexWrap: "wrap", margin: "4px 0" }}>
-      {options.map(([v, label]) => (
-        <button
-          key={v}
-          type="button"
-          className={`seg__btn ${value === v ? "seg__btn--active" : ""}`}
-          style={state === "bad" && value === v ? { borderColor: "#D97D7D" } : state === "ok" && value === v ? { borderColor: "#5FA8A0" } : undefined}
-          onClick={() => onChange(v)}
-        >
-          {label}
-        </button>
-      ))}
-      {state === "bad" && correct && <span className="ans-hint" style={{ marginLeft: 8 }}>= {correct}</span>}
+    <span className="choice-row">
+      {options.map(([v, label]) => {
+        const active = value === v;
+        const cls = active ? (state === "ok" ? "choice--ok" : state === "bad" ? "choice--bad" : "choice--active") : "";
+        return (
+          <button key={v} type="button" className={`choice ${cls}`} onClick={() => onChange(v)}>{label}</button>
+        );
+      })}
+      {state === "bad" && correct && <span className="ans-hint">= {correct}</span>}
     </span>
   );
 }

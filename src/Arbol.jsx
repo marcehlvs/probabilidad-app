@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { RotateCcw, Minus, Plus } from "lucide-react";
 import { AnswerInput } from "./ui.jsx";
-import { treeTwoDraws, makeTreeExercise, parseProb, closeTo, fracStr, sumFrac, COLOR_HEX } from "./prob.js";
+import { treeTwoDraws, makeTreeExercise, parseProb, closeTo, fracStr, frac, sumFrac, COLOR_HEX } from "./prob.js";
 import { recordResult } from "./progress.js";
 
 function Tree({ rows }) {
@@ -58,20 +58,35 @@ function Explorer() {
 }
 
 function Practice() {
-  const [seed, setSeed] = useState(1);
+  const [seed, setSeed] = useState(() => 1 + Math.floor(Math.random() * 9000));
   const [ans, setAns] = useState({});
   const [checked, setChecked] = useState(false);
   const ex = makeTreeExercise(seed);
+  const colors = Object.keys(ex.urn);
+  const total = ex.urn.Rojas + ex.urn.Azules;
   const rr = ex.tree.find((r) => r.c1 === "Rojas" && r.c2 === "Azules");
+
+  const branches = [
+    ...colors.map((c) => [`p1_${c}`, frac(ex.urn[c], total)]),
+    ...ex.tree.flatMap((r) => [[`p2_${r.c1}_${r.c2}`, r.p2], [`pp_${r.c1}_${r.c2}`, r.p]]),
+  ];
   const Q = [
     ["rojaAzul", "P(1ª roja y 2ª azul)", rr.p],
     ["same", "P(las dos del mismo color)", ex.same],
     ["mix", "P(de distinto color)", ex.mix],
   ];
-  const ok = Object.fromEntries(Q.map(([k, , f]) => [k, closeTo(parseProb(ans[k]), f.num / f.den)]));
+  const all = [...branches, ...Q.map(([k, , f]) => [k, f])];
+  const fmap = Object.fromEntries(all);
+  const ok = Object.fromEntries(all.map(([k, f]) => [k, closeTo(parseProb(ans[k]), f.num / f.den)]));
   const score = Object.values(ok).filter(Boolean).length;
+
+  const inp = (k, width = 64) => (
+    <AnswerInput value={ans[k] ?? ""} width={width} inputMode="text" onChange={(v) => { setAns({ ...ans, [k]: v }); setChecked(false); }}
+      state={checked ? (ok[k] ? "ok" : "bad") : undefined} hint={fracStr(fmap[k])} />
+  );
   const next = () => { setSeed((s) => s + 1); setAns({}); setChecked(false); };
-  const check = () => { setChecked(true); recordResult({ kind: "practica", id: seed, title: "Diagrama de árbol", score, total: Q.length }); };
+  const check = () => { setChecked(true); recordResult({ kind: "practica", id: seed, title: "Diagrama de árbol", score, total: all.length }); };
+
   return (
     <div>
       <div className="ex-header">
@@ -80,22 +95,33 @@ function Practice() {
       </div>
       <p className="eval-note">
         Una urna tiene {ex.urn.Rojas} bolitas rojas y {ex.urn.Azules} azules. Se sacan dos bolitas {ex.replace ? "CON reposición" : "SIN reposición"}.
-        Dibujá el árbol en tu carpeta y calculá:
       </p>
+      <p><b>1. Completá las ramas</b> <span className="hc-note">(probabilidad de cada rama y producto a lo largo del camino)</span></p>
+      {colors.map((c1) => (
+        <div key={c1} style={{ borderLeft: `4px solid ${COLOR_HEX[c1]}`, paddingLeft: 10, margin: "8px 0 14px" }}>
+          <div><b>1ª {c1.toLowerCase()}:</b> {inp(`p1_${c1}`)}</div>
+          {ex.tree.filter((r) => r.c1 === c1).map((r) => (
+            <div key={r.c2} style={{ marginLeft: 14, marginTop: 8 }}>
+              → 2ª {r.c2.toLowerCase()}: {inp(`p2_${c1}_${r.c2}`)} &nbsp;⇒ producto: {inp(`pp_${c1}_${r.c2}`, 72)}
+            </div>
+          ))}
+        </div>
+      ))}
+      <p><b>2. Calculá</b></p>
       <div className="eval-fields">
-        {Q.map(([k, label, f]) => (
+        {Q.map(([k, label]) => (
           <div className="eval-field" key={k}>
             <div className="eval-field__label">{label}</div>
-            <AnswerInput value={ans[k] ?? ""} width={90} onChange={(v) => { setAns({ ...ans, [k]: v }); setChecked(false); }}
-              state={checked ? (ok[k] ? "ok" : "bad") : undefined} hint={fracStr(f)} />
+            {inp(k, 90)}
           </div>
         ))}
       </div>
+      <p className="hc-note">Escribí fracciones (3/10), decimales (0,3) o porcentajes (30%).</p>
       <div className="ex-actions"><button className="btn btn--primary" onClick={check}>Verificar</button></div>
       {checked && (
-        <div className={`ex-feedback ${score === Q.length ? "ex-feedback--ok" : "ex-feedback--info"}`}>
-          {score === Q.length ? "¡Perfecto!" : `${score} de ${Q.length}. Multiplicá a lo largo de cada rama y sumá las ramas que cumplen la condición. Tu árbol debería dar:`}
-          {score !== Q.length && <div style={{ marginTop: 8 }}><Tree rows={ex.tree} /></div>}
+        <div className={`ex-feedback ${score === all.length ? "ex-feedback--ok" : "ex-feedback--info"}`}>
+          {score === all.length ? "¡Perfecto!" : `${score} de ${all.length} correctas. Recordá: se multiplica a lo largo de cada rama y se suman las ramas que cumplen la condición. El árbol completo es:`}
+          {score !== all.length && <div style={{ marginTop: 8 }}><Tree rows={ex.tree} /></div>}
         </div>
       )}
     </div>

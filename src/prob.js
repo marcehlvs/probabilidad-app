@@ -154,11 +154,26 @@ export function sameSet(input, arr) {
   return u.length === arr.length && u.every((x, i) => x === arr[i]);
 }
 
+export const CONTEXTS = [
+  { pop: "estudiantes", one: "un estudiante", la: "deporte", lb: "idioma", a1: "practica un deporte", b1: "estudia un idioma", aN: "practican un deporte", bN: "estudian un idioma" },
+  { pop: "vecinos", one: "un vecino", la: "mascota", lb: "auto", a1: "tiene mascota", b1: "tiene auto", aN: "tienen mascota", bN: "tienen auto" },
+  { pop: "socios de un club", one: "un socio", la: "natación", lb: "gimnasio", a1: "hace natación", b1: "va al gimnasio", aN: "hacen natación", bN: "van al gimnasio" },
+  { pop: "jóvenes", one: "un joven", la: "Instagram", lb: "TikTok", a1: "usa Instagram", b1: "usa TikTok", aN: "usan Instagram", bN: "usan TikTok" },
+  { pop: "clientes de una librería", one: "un cliente", la: "libro", lb: "útiles", a1: "compró un libro", b1: "compró útiles", aN: "compraron un libro", bN: "compraron útiles" },
+  { pop: "alumnos de un colegio", one: "un alumno", la: "fútbol", lb: "instrumento", a1: "juega al fútbol", b1: "toca un instrumento", aN: "juegan al fútbol", bN: "tocan un instrumento" },
+];
+
 export function makeCondExercise(seed) {
   const rnd = mulberry32(seed * 31337 + 5);
-  const t = { a_b: randInt(rnd, 4, 15), a_nb: randInt(rnd, 3, 15), na_b: randInt(rnd, 3, 15), na_nb: randInt(rnd, 4, 15) };
-  const c = condFromTable(t);
-  return { t, c };
+  const ctx = pick(rnd, CONTEXTS);
+  let t;
+  if (rnd() < 0.35) { // tabla independiente (producto de marginales)
+    const k = randInt(rnd, 1, 3), r = [randInt(rnd, 1, 4), randInt(rnd, 1, 4)], c = [randInt(rnd, 1, 4), randInt(rnd, 1, 4)];
+    t = { a_b: k * r[0] * c[0], a_nb: k * r[0] * c[1], na_b: k * r[1] * c[0], na_nb: k * r[1] * c[1] };
+  } else {
+    t = { a_b: randInt(rnd, 4, 15), a_nb: randInt(rnd, 3, 15), na_b: randInt(rnd, 3, 15), na_nb: randInt(rnd, 4, 15) };
+  }
+  return { t, c: condFromTable(t), ctx };
 }
 
 export function makeTreeExercise(seed) {

@@ -21,7 +21,7 @@ function build(n) {
     { key: "c2", text: C2.text, ok: (v) => parseInteger(v) === C2.answer, show: String(C2.answer) },
     {
       key: "d", show: fracStr(D.c.pA_B), ok: (v) => closeTo(parseProb(v), D.c.pA_B.num / D.c.pA_B.den),
-      text: `En un grupo de ${D.c.n} estudiantes, ${D.c.A} practican deporte (A), ${D.c.B} estudian un idioma (B) y ${D.t.a_b} hacen ambas cosas. Si uno estudia un idioma, ¿cuál es la probabilidad de que practique deporte? P(A | B)`,
+      text: `En un grupo de ${D.c.n} ${D.ctx.pop}, ${D.c.A} ${D.ctx.aN} (A), ${D.c.B} ${D.ctx.bN} (B) y ${D.t.a_b} cumplen ambas condiciones. Se elige ${D.ctx.one} al azar y se sabe que cumple B. ¿Cuál es la probabilidad de que cumpla A? P(A | B)`,
     },
     {
       key: "t", show: fracStr(T.same), ok: (v) => closeTo(parseProb(v), T.same.num / T.same.den),
@@ -58,7 +58,7 @@ export default function Evaluacion() {
       {items.map((it, i) => (
         <div className="eval-section" key={it.key}>
           <p className="eval-note"><b>{i + 1}.</b> {it.text}</p>
-          <AnswerInput value={ans[it.key] ?? ""} width={110} disabled={done}
+          <AnswerInput value={ans[it.key] ?? ""} width={110} disabled={done} inputMode={it.key[0] === "c" ? "numeric" : "text"}
             onChange={(v) => setAns({ ...ans, [it.key]: v })}
             state={done ? (res[i] ? "ok" : "bad") : undefined} hint={it.show} />
         </div>

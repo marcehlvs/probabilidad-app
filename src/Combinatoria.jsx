@@ -40,7 +40,7 @@ function Guide() {
 }
 
 function Practice() {
-  const [seed, setSeed] = useState(1);
+  const [seed, setSeed] = useState(() => 1 + Math.floor(Math.random() * 9000));
   const [type, setType] = useState(null);
   const [val, setVal] = useState("");
   const [checked, setChecked] = useState(false);

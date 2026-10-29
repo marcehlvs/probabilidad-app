@@ -29,13 +29,18 @@ for (let s = 1; s <= 3000; s++) {
   const { pA, pB, pAyB, pA_B } = k.c;
   const v = (f) => f.num / f.den;
   if (Math.abs(v(pA_B) - v(pAyB) / v(pB)) > 1e-9) bad(`cond ${s}: P(A|B) inconsistente`);
+  if (k.c.indep !== (pA_B.num * pA.den === pA.num * pA_B.den)) bad(`cond ${s}: independencia inconsistente`);
   const t = P.makeTreeExercise(s);
   const total = P.sumFrac(t.tree.map((r) => r.p));
   if (total.num !== total.den) bad(`árbol ${s}: las ramas no suman 1 (${P.fracStr(total)})`);
   const sm = P.sumFrac([t.same, t.mix]);
   if (sm.num !== sm.den) bad(`árbol ${s}: mismo + distinto ≠ 1`);
+  if (P.makeCondExercise(s).ctx.pop === undefined) bad(`cond ${s}: sin contexto`);
   if (P.makeCombExercise(s).text !== c.text) bad(`comb ${s}: no determinista`);
 }
 
 if (fails.length) { console.error(fails.slice(0, 20).join("\n")); process.exit(1); }
+const nInd = Array.from({ length: 3000 }, (_, i) => P.makeCondExercise(i + 1).c.indep).filter(Boolean).length;
+const nCtx = new Set(Array.from({ length: 3000 }, (_, i) => P.makeCondExercise(i + 1).ctx.pop)).size;
+if (nInd < 600 || nCtx < 6) { console.error(`variedad insuficiente: independientes=${nInd}, contextos=${nCtx}`); process.exit(1); }
 console.log("OK: combinatoria, Laplace, condicional y árbol verificados con 3000 semillas");

@@ -13,11 +13,11 @@ const KEYS = [
 ];
 
 export default function Condicional() {
-  const [seed, setSeed] = useState(1);
+  const [seed, setSeed] = useState(() => 1 + Math.floor(Math.random() * 9000));
   const [ans, setAns] = useState({});
   const [indep, setIndep] = useState(null);
   const [checked, setChecked] = useState(false);
-  const { t, c } = makeCondExercise(seed);
+  const { t, c, ctx } = makeCondExercise(seed);
   const val = (f) => f.num / f.den;
   const res = Object.fromEntries(KEYS.map(([k, , get]) => [k, closeTo(parseProb(ans[k]), val(get(c)))]));
   const okIndep = indep === (c.indep ? "si" : "no");
@@ -38,12 +38,12 @@ export default function Condicional() {
         </div>
         <button className="btn btn--ghost" onClick={next}><RotateCcw size={14} /> otro problema</button>
       </div>
-      <p className="eval-note">Se encuestó a {c.n} estudiantes. A = practica un deporte · B = estudia un idioma. Se elige uno al azar.</p>
+      <p className="eval-note">Se encuestó a {c.n} {ctx.pop}. A: {ctx.a1} · B: {ctx.b1}. Se elige {ctx.one} al azar.</p>
       <div className="table-wrap">
         <table className="freq-table">
-          <thead><tr><th></th><th>B (idioma)</th><th>no B</th><th>Total</th></tr></thead>
+          <thead><tr><th></th><th>B ({ctx.lb})</th><th>no B</th><th>Total</th></tr></thead>
           <tbody>
-            <tr><th>A (deporte)</th><td>{t.a_b}</td><td>{t.a_nb}</td><td>{c.A}</td></tr>
+            <tr><th>A ({ctx.la})</th><td>{t.a_b}</td><td>{t.a_nb}</td><td>{c.A}</td></tr>
             <tr><th>no A</th><td>{t.na_b}</td><td>{t.na_nb}</td><td>{t.na_b + t.na_nb}</td></tr>
             <tr><th>Total</th><td>{c.B}</td><td>{t.a_nb + t.na_nb}</td><td>{c.n}</td></tr>
           </tbody>
@@ -53,7 +53,7 @@ export default function Condicional() {
         {KEYS.map(([k, label, get]) => (
           <div className="eval-field" key={k}>
             <div className="eval-field__label">{label}</div>
-            <AnswerInput value={ans[k] ?? ""} width={90} onChange={(v) => { setAns({ ...ans, [k]: v }); setChecked(false); }}
+            <AnswerInput value={ans[k] ?? ""} width={90} inputMode="text" onChange={(v) => { setAns({ ...ans, [k]: v }); setChecked(false); }}
               state={checked ? (res[k] ? "ok" : "bad") : undefined} hint={fracStr(get(c))} />
           </div>
         ))}

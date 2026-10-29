@@ -5,7 +5,7 @@ import { makeLaplaceExercise, parseProb, parseInteger, sameSet, closeTo } from "
 import { recordResult } from "./progress.js";
 
 export default function Laplace() {
-  const [seed, setSeed] = useState(1);
+  const [seed, setSeed] = useState(() => 1 + Math.floor(Math.random() * 9000));
   const [a, setA] = useState({});
   const [checked, setChecked] = useState(false);
   const ex = makeLaplaceExercise(seed);
