@@ -22,6 +22,29 @@ export const varCon = (n, k) => n ** k;
 export const comb = (n, k) => { if (k < 0 || k > n) return 0; let r = 1; for (let i = 1; i <= k; i++) r = (r * (n - k + i)) / i; return Math.round(r); };
 export const combRep = (n, k) => comb(n + k - 1, k);
 
+/**
+ * Lista TODOS los casos de cada tipo de agrupamiento (para mostrar qué cuenta cada fórmula).
+ * type: perm | permRep | varSin | varCon | comb. items puede tener letras repetidas (permRep).
+ * k = cuántos elementos se eligen (por defecto, todos).
+ */
+export function listCases(type, items, k = items.length) {
+  const out = [];
+  const arr = [...items].sort();
+  const used = [];
+  const go = (cur, from) => {
+    if (cur.length === k) { out.push(cur.join("")); return; }
+    for (let i = type === "comb" ? from : 0; i < arr.length; i++) {
+      if ((type === "perm" || type === "permRep" || type === "varSin") && used[i]) continue;
+      if (type === "permRep" && i > 0 && arr[i] === arr[i - 1] && !used[i - 1]) continue;
+      used[i] = true;
+      go([...cur, arr[i]], i + 1);
+      used[i] = false;
+    }
+  };
+  go([], 0);
+  return out;
+}
+
 export const gcd = (a, b) => (b ? gcd(b, a % b) : Math.abs(a));
 export function frac(num, den) { const g = gcd(num, den) || 1; return { num: num / g, den: den / g }; }
 export const fracStr = (f) => (f.den === 1 ? String(f.num) : `${f.num}/${f.den}`);

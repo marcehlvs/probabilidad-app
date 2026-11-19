@@ -196,3 +196,9 @@
 .groups-card__title { font-family: 'Fraunces', serif; font-weight: 700; font-size: 13px; color: #5A5142; margin-bottom: 6px; }
 .groups-card__members { display: flex; flex-wrap: wrap; gap: 6px; }
 .groups-chip { background: #1F3A34; color: #FAF7F0; border-radius: 999px; padding: 4px 12px; font-weight: 700; font-size: 15px; }
+
+/* Combinatoria: solapa "¿En qué consiste cada uno?" */
+.teo-box { background: #FBF7EA; border: 1px solid #E4DCC5; border-radius: 10px; padding: 8px 14px; margin: 12px 0; }
+.teo-list { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+.teo-p { font-size: 13.5px; line-height: 1.5; color: #3F382B; margin: 8px 0; }
+.teo-ojo { font-size: 13px; line-height: 1.5; color: #7A6A3E; margin: 10px 0 2px; padding-left: 10px; border-left: 3px solid #D9B96A; }

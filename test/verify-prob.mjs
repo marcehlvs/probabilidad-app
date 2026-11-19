@@ -17,6 +17,20 @@ eq(P.parseProb("25%"), 0.25, "porcentaje");
 eq(P.parseProb("0,5"), 0.5, "coma decimal");
 eq(P.parseInteger("1.200"), 1200, "miles");
 
+// listCases: la cantidad de casos listados coincide con la fórmula, sin duplicados
+const lc = (type, items, k) => P.listCases(type, items, k);
+const nuevos = (arr) => new Set(arr).size;
+eq(lc("perm", ["A", "B", "C"]).length, P.perm(3), "listCases perm");
+eq(lc("permRep", ["A", "A", "B"]).length, P.permRep(3, [2, 1]), "listCases permRep");
+eq(lc("permRep", ["A", "N", "A", "N", "A"]).length, P.permRep(5, [3, 2]), "listCases ANANA");
+eq(lc("varSin", ["A", "B", "C", "D"], 2).length, P.varSin(4, 2), "listCases varSin");
+eq(lc("varCon", ["A", "B", "C"], 2).length, P.varCon(3, 2), "listCases varCon");
+eq(lc("comb", ["A", "B", "C", "D"], 2).length, P.comb(4, 2), "listCases comb");
+for (const [ty, it, k] of [["perm", ["A", "B", "C"]], ["permRep", ["A", "A", "B"]], ["varSin", ["A", "B", "C", "D"], 2], ["varCon", ["A", "B", "C"], 2], ["comb", ["A", "B", "C", "D"], 2]]) {
+  const l = lc(ty, it, k);
+  eq(nuevos(l), l.length, `listCases ${ty}: sin duplicados`);
+}
+
 for (let s = 1; s <= 3000; s++) {
   const c = P.makeCombExercise(s);
   if (!Number.isInteger(c.answer) || c.answer <= 0) bad(`comb ${s}: respuesta inválida`);
