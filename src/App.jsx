@@ -4,6 +4,7 @@ import Combinatoria from "./Combinatoria.jsx";
 import Condicional from "./Condicional.jsx";
 import Arbol from "./Arbol.jsx";
 import Simulador from "./Simulador.jsx";
+import Ejercicios from "./Ejercicios.jsx";
 import Evaluacion from "./Evaluacion.jsx";
 import FormulaSheet from "./FormulaSheet.jsx";
 import Progress from "./Progress.jsx";
@@ -17,10 +18,11 @@ const TABS = [
   ["combinatoria", "3 · Combinatoria", Combinatoria],
   ["condicional", "4 · Condicional", Condicional],
   ["arbol", "5 · Diagramas de árbol", Arbol],
-  ["evaluacion", "6 · Modo evaluación", Evaluacion],
-  ["formulas", "7 · Hoja de fórmulas", FormulaSheet],
-  ["progreso", "8 · Mi progreso", Progress],
-  ["grupos", "9 · Armar grupos", Groups],
+  ["ejercicios", "6 · Ejercicios por nivel", Ejercicios],
+  ["evaluacion", "7 · Modo evaluación", Evaluacion],
+  ["formulas", "8 · Hoja de fórmulas", FormulaSheet],
+  ["progreso", "9 · Mi progreso", Progress],
+  ["grupos", "10 · Armar grupos", Groups],
 ];
 
 export default function App() {
